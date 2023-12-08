@@ -24,7 +24,7 @@ class Program
 
     class SimpleGoal : Goal
     {
-        public SimpleGoal(string name, string description, int points): base(name, description, points)
+        public SimpleGoal(string name, string description, int points) : base(name, description, points)
         {
         }
 
@@ -36,8 +36,7 @@ class Program
 
     class EternalGoal : Goal
     {
-        public EternalGoal(string name, string description, int
-points) : base(name, description, points)
+        public EternalGoal(string name, string description, int points) : base(name, description, points)
         {
         }
 
@@ -53,8 +52,7 @@ points) : base(name, description, points)
         public int _bonus;
         public int _completedCount;
 
-        public ChecklistGoal(string name, string description, int
-points, int targetCount, int bonus) : base(name, description, points)
+        public ChecklistGoal(string name, string description, int points, int targetCount, int bonus) : base(name, description, points)
         {
             _targetCount = targetCount;
             _bonus = bonus;
@@ -78,12 +76,13 @@ points, int targetCount, int bonus) : base(name, description, points)
     }
 
     static List<Goal> goals = new List<Goal>();
+    static int totalPoints = 0;
 
     static void Main()
     {
         while (true)
         {
-            Console.WriteLine("You have 0 points.");
+            Console.WriteLine($"You have {totalPoints} points.");
             Console.WriteLine("Menu Options");
             Console.WriteLine("1. Create new goal");
             Console.WriteLine("2. List Goals");
@@ -185,24 +184,16 @@ points, int targetCount, int bonus) : base(name, description, points)
         {
             foreach (Goal goal in goals)
             {
-
-writer.WriteLine($"{goal.GetType().Name};{goal._name};{goal._description};{goal._points};{goal._completed}");
+                writer.WriteLine($"{goal.GetType().Name};{goal._name};{goal._description};{goal._points};{goal._completed}");
                 if (goal is ChecklistGoal checklistGoal)
                 {
-
-writer.WriteLine($"{checklistGoal._targetCount};{checklistGoal._bonus};{checklistGoal._completedCount}");
+                    writer.WriteLine($"{checklistGoal._targetCount};{checklistGoal._bonus};{checklistGoal._completedCount}");
                 }
             }
             Console.WriteLine("Goals have been saved successfully.");
         }
-        // Additionally, save the current score
-        using (StreamWriter writer = new StreamWriter("score.txt"))
+            using (StreamWriter writer = new StreamWriter("score.txt"))
         {
-            int totalPoints = 0;
-            foreach (Goal goal in goals)
-            {
-                totalPoints += goal.CalculatePoints();
-            }
             writer.WriteLine($"TotalPoints:{totalPoints}");
             Console.WriteLine("Score has been saved successfully.");
         }
@@ -226,33 +217,29 @@ writer.WriteLine($"{checklistGoal._targetCount};{checklistGoal._bonus};{checklis
 
                 if (type == nameof(SimpleGoal))
                 {
-                    goals.Add(new SimpleGoal(name, description,
-points) { _completed = completed });
+                    goals.Add(new SimpleGoal(name, description, points) { _completed = completed });
                 }
                 else if (type == nameof(EternalGoal))
                 {
-                    goals.Add(new EternalGoal(name, description,
-points) { _completed = completed });
+                    goals.Add(new EternalGoal(name, description, points) { _completed = completed });
                 }
                 else if (type == nameof(ChecklistGoal))
                 {
                     int targetCount = int.Parse(data[5]);
                     int bonus = int.Parse(data[6]);
                     int completedCount = int.Parse(data[7]);
-                    goals.Add(new ChecklistGoal(name, description,
-points, targetCount, bonus) { _completed = completed, _completedCount
-= completedCount });
+                    goals.Add(new ChecklistGoal(name, description, points, targetCount, bonus) { _completed = completed, _completedCount = completedCount });
                 }
             }
             Console.WriteLine("Goals have been loaded successfully.");
         }
-        // Additionally, load the saved score
+    
         using (StreamReader reader = new StreamReader("score.txt"))
         {
             string scoreData = reader.ReadLine();
             if (scoreData != null && scoreData.StartsWith("TotalPoints:"))
             {
-                int totalPoints = int.Parse(scoreData.Split(':')[1]);
+                totalPoints = int.Parse(scoreData.Split(':')[1]);
                 Console.WriteLine($"Loaded score: {totalPoints}");
             }
         }
@@ -274,6 +261,7 @@ points, targetCount, bonus) { _completed = completed, _completedCount
 
             goal._completed = true;
             Console.WriteLine($"Congratulations you have earned {pointsEarned} points!");
+            totalPoints += pointsEarned;
         }
         else
         {
