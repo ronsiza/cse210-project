@@ -1,0 +1,2 @@
+ChecklistGoal;exercise;daily;60;True
+3;40;0
